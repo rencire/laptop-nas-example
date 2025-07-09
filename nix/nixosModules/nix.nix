@@ -1,8 +1,6 @@
 # {...}:
 {
   nix = {
-    # NOTE: optimise can lead to issues on darwin, disable for now.
-    # https://github.com/nix-darwin/nix-darwin/pull/915
     optimise.automatic = true;
     gc = {
       automatic = true;

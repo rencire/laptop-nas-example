@@ -1,31 +1,50 @@
-This is an example repo for installing nixos on my old 2010 macbook pro, semi-remotely.
-
+# About
+This is an example repo for installing nixos on my old 2010 macbook pro, semi-remotely (need to physically add usb boot drive to machine, but all other steps are remote).
 For more info, see blog post: <link to blog post>
 
 
-##### Quick rundown of file structure
+# Quick rundown of file structure
 I won't go through every detail of each files. Instead, I'll go through a quick summary and highlights of the important files:
 
-###### flake.nix
+## flake.nix
 This is the base file for our flake configuration. It's mainly used to define our flake dependencies (i.e. `inputs`).
 I'm using flakelight here to help reduce flake boilerplate.
 `disko` and `nixos-facter` are dependencies used as part of nixos-install later.
 
-###### nix/hosts/
+## nix/hosts/
 This directory is where we declare the configuration for the host machine.
 We will add our host configuration file in later steps.
 
-###### nix/packages/images/nixos-installer.nix
+There's an `target_hostname` folder currently.  You should rename this to the hostname of your nas machine.
+
+### nix/hosts/target_hostname/default.nix
+This file collects all the nixos modules for the os we will install onto `target_hostname`.
+
+### nix/hosts/target_hostname/configuration.nix
+This file contains general nixos configuration for the target machine.
+Make sure to change any relevant settings for your machine here.
+
+### nix/hosts/target_hostname/disk-config.nix
+This file contains the declarative configuration for our disk partitions.
+It will be used by Disko.
+
+### nix/hosts/target_hostname/networking.nix
+This file contains networking configuration for the target machine.
+Make sure settings like `hostname` is set correctly for your machine here.
+
+### nix/hosts/target_hostname/users.nix
+This file contains user configuration for the target machine.
+
+## nix/packages/images/nixos-installer.nix
 This is the entrypoint to the configuration for the "nixos-installer" image.
 We use [nixos-generators](https://github.com/nix-community/nixos-generators) to create the
 installer image.
 
-###### nix/packages/images/base-installer-iso.nix
+## nix/packages/images/base-installer-iso.nix
 This is where we define most of the configuration for the installer image itself.
 We will use these settings to build an installer image that suits our needs, compared to
-the default nixos installer image.
+the default nixos installer image:
 
-<TODO: use a link to github for embedded code snippet>
 
 ```
 {config, lib, pkgs, ...}:
@@ -43,7 +62,7 @@ the default nixos installer image.
   services.openssh = {
     enable = true; 
     settings = {
-      AllowUsers = ["root" "nixos"]; # Only allow root and nixos suer to login via ssh
+      AllowUsers = ["root" "nixos"]; # Only allow root and nixos user to login via ssh
       PasswordAuthentication = false; 
     };
   };
@@ -71,12 +90,25 @@ A quick breakdown of the configuration for the installer image:
 - Lastly, we set `system.stateVersion` since its required for nixos configurations.
 
 
-###### nix/apps/flash-nixos-installer-iso.nix
+## nix/apps/flash-nixos-installer-iso.nix
 This contains our script that will flash the iso installer.
 
-###### nix/nixosModules/nix.nix
+## nix/nixosModules/deploy.nix
+This file contains settings for the `deploy` user (e.g. allowed commands, etc.).
+
+## nix/nixosModules/nix.nix
 This file contains some common configuration for nix itself we want to include in our installer image.
 
-###### nix/nixosModules/ssh-keys.nix
+## nix/nixosModules/ssh-hardening.nix
+This file includes some ssh confniguration to harden security.
+
+## nix/nixosModules/ssh-keys.nix
 This file is for specifying our public ssh key, so that we can ssh into our nixos installer.
 
+In future, would like to use a more robust solution for key management, like [`sops-nix`](https://github.com/Mic92/sops-nix) for example.
+While exposing a **public** key is not unsafe compared to exposing **private** key,
+I think checking in keys is a bad practice to follow.
+
+
+
+[1]: https://github.com/nix-community/flakelight/blob/master/API_GUIDE.md#additional-pkgs-values

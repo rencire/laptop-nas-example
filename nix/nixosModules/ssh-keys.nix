@@ -5,7 +5,7 @@ with lib;
   options.ssh-keys = {
     authorizedSSHKey = mkOption {
       type = types.str;
-      default = "<YOUR_SSH_KEY>";
+      default = "<YOUR_PUBLIC_SSH_KEY>";
       description = ''
         Authorized public key for ssh access.  Intended to be assigned to
         `users.users.<user>.openssh.authorizedKeys.keys` in user configurations in
