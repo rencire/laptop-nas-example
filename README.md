@@ -68,8 +68,8 @@ the default nixos installer image:
   };
 
   # Add authorized public key for ssh-ing to the installer as the root user
-  users.users.root.openssh.authorizedKeys.keys = [ config.ssh-keys.authorizedSSHKey ];
-  users.users.nixos.openssh.authorizedKeys.keys = [ config.ssh-keys.authorizedSSHKey ];
+  users.users.root.openssh.authorizedKeys.keys = [ config.ssh-keys.installer ];
+  users.users.nixos.openssh.authorizedKeys.keys = [ config.ssh-keys.installer ];
 
   system.stateVersion = "24.11";
 }
@@ -95,6 +95,7 @@ This contains our script that will flash the iso installer.
 
 ## nix/nixosModules/deploy.nix
 This file contains settings for the `deploy` user (e.g. allowed commands, etc.).
+We use this user only for updating our target machine's os remotely.
 
 ## nix/nixosModules/nix.nix
 This file contains some common configuration for nix itself we want to include in our installer image.
@@ -103,7 +104,20 @@ This file contains some common configuration for nix itself we want to include i
 This file includes some ssh confniguration to harden security.
 
 ## nix/nixosModules/ssh-keys.nix
-This file is for specifying our public ssh key, so that we can ssh into our nixos installer.
+This file is for specifying our public ssh keys, for both the installer and also the final
+nixos we install on our target machine.
+
+There are three keys here for the 3 different users:
+1. `installer`
+- Key is meant for us to remote into the bootstrapped installer os, so that we can start nixos installation process.
+- Not used after we are done with initial nixos installation.  Future upgrades/updates will be handled via `deploy` user.
+
+2. `deploy` key is for our deploy user.
+- As mentioned previously, this is thte main user we use for updating our target machine's os remotely.
+
+3. `admin` key is for the admin user of our target machine.
+- This is mainly meant for troubleshooting (e.g if we need to manually ssh into the target
+machine and manually execute commands).
 
 In future, would like to use a more robust solution for key management, like [`sops-nix`](https://github.com/Mic92/sops-nix) for example.
 While exposing a **public** key is not unsafe compared to exposing **private** key,

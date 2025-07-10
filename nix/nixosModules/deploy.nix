@@ -2,7 +2,7 @@
 # - https://discourse.nixos.org/t/which-commands-are-required-for-remote-switch/17936/8
 # - https://discourse.nixos.org/t/nixos-rebuild-use-remote-sudo-prompts-me-for-a-password-3-times/56003/3
 # - https://discourse.nixos.org/t/which-commands-are-required-for-remote-switch/17936
-{config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   # See: https://github.com/NixOS/nixpkgs/issues/159082#issuecomment-1118968571
   nix.settings.trusted-users = [
@@ -15,7 +15,7 @@
     shell = pkgs.bash;
 
     openssh.authorizedKeys.keys = [
-      "no-pty ${config.ssh-keys.authorizedSSHKey}"
+      "no-pty ${config.ssh-keys.deploy}"
     ];
   };
 

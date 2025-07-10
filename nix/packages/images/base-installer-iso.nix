@@ -36,8 +36,8 @@
   };
 
   # Add authorized public key for ssh-ing to the installer as the root user
-  users.users.root.openssh.authorizedKeys.keys = [ config.ssh-keys.authorizedSSHKey ];
-  users.users.nixos.openssh.authorizedKeys.keys = [ config.ssh-keys.authorizedSSHKey ];
+  users.users.root.openssh.authorizedKeys.keys = [ config.ssh-keys.installer ];
+  users.users.nixos.openssh.authorizedKeys.keys = [ config.ssh-keys.installer ];
 
   system.stateVersion = "24.11";
 }
