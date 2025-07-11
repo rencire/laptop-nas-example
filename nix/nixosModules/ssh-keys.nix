@@ -1,7 +1,6 @@
 { lib, ... }:
 with lib;
 {
-  # Add an ssh authroized keys var for users
   options.ssh-keys = {
     installer = mkOption {
       type = types.str;
