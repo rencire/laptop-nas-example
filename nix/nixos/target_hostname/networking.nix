@@ -1,4 +1,24 @@
 {
+  # OPTIONAL: if building this configuration for an old macbook, will need
+  # to use the insecure broadcom-sta driver package if also using nixos-facter
+  #
+  # Permitting insecure "broadcom-sta driver package".
+  #
+  # It seems nixos-facter pulls in this package for some reason, so we need to allow
+  # it if we want to use nixos-facter and build the configuration successfully.
+  # Otherwise, CVE warning will prevent configuration from being built.
+  #
+  # CVEs:
+  # - CVE-2019-9501
+  # - CVE-2019-9502
+  nixpkgs.config = {
+    permittedInsecurePackages = [
+      "broadcom-sta-6.30.223.271-57-6.12.39"
+    ];
+  };
+  # IMPORTANT: make sure to NOT use WIFI on the mbp2010 machine due to the unaddressed CVEs.
+  # WIFI is disabled by default, but explicitly declaring it here for documenation purposes.
+  networking.wireless.enable = false;
 
   networking = {
     # TODO set your host name
